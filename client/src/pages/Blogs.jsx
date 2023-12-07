@@ -5,7 +5,7 @@ import Blog from "./Blog"
 
 const Blogs = () => {
   const [blogs, setBlogs] = useState([])
-  const [search, setSearch] = useState()
+  const [search, setSearch] = useState("")
   const [category, setCategory] = useState("")
   const [sortOrder, setSortOrder] = useState("")
 
@@ -14,9 +14,25 @@ const Blogs = () => {
   useEffect(() => {
     let url
 
+    if (search) {
+      url = `${API}/blogs?title=${search}`
+    }
+
+    if (category) {
+      url = `${API}/blogs?category=${category}`
+    }
+
+    if (sortOrder) {
+      url = `${API}/blogs?sort=date&order=${sortOrder}`
+    }
+
+    if (!search && !category && !sortOrder) {
+      url = `${API}/blogs`
+    }
+
     axios({
       method: "get",
-      url: `${API}/blogs`,
+      url: url,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -33,7 +49,7 @@ const Blogs = () => {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="search"
         />
-        <select name="category">
+        <select name="category" onClick={(e) => setCategory(e.target.value)}>
           <option value="">Filter By Category</option>
           <option
             value="Business"
@@ -58,18 +74,12 @@ const Blogs = () => {
           </option>
         </select>
 
-        <select name="sort">
+        <select name="sort" onClick={(e) => setSortOrder(e.target.value)}>
           <option value="">Sort By Date</option>
-          <option
-            value="Ascending"
-            onClick={(e) => setSortOrder(e.target.value)}
-          >
+          <option value="asc" onClick={(e) => setSortOrder(e.target.value)}>
             Ascending
           </option>
-          <option
-            value="Descending"
-            onClick={(e) => setSortOrder(e.target.value)}
-          >
+          <option value="desc" onClick={(e) => setSortOrder(e.target.value)}>
             Descending
           </option>
         </select>
